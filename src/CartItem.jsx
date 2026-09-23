@@ -1,0 +1,12 @@
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems, selectTotalQuantity, selectTotalAmount, increaseQuantity, decreaseQuantity, removeItem } from './CartSlice.jsx';
+import { money } from './plants.js';
+export default function CartItem() {
+  const dispatch = useDispatch();
+  const items = useSelector(selectCartItems);
+  const quantity = useSelector(selectTotalQuantity);
+  const total = useSelector(selectTotalAmount);
+  const [checkout, setCheckout] = useState(false);
+  return <main id="main-content" className="container cart-page"><div className="page-intro"><div><p className="eyebrow">YOUR LITTLE PARADISE</p><h1>Shopping <em>cart.</em></h1></div><p className="plant-total" aria-live="polite">Total plants: <strong>{quantity}</strong></p></div><div className="cart-layout"><section className="cart-items" aria-label="Plants in your cart">{items.length === 0 ? <div className="empty-cart"><h2>A little room for greenery.</h2><p>Your cart is empty. Find a plant you’ll love.</p><a href="#/plants" className="button">Explore Plants</a></div> : items.map(item => <article className="cart-row" key={item.id}><img src={item.image} alt={item.name} width="128" height="144"/><div className="cart-details"><h2>{item.name}</h2><p>Unit price: {money(item.price)}</p><div className="quantity-control"><button onClick={() => dispatch(decreaseQuantity(item.id))} aria-label={`Decrease ${item.name} quantity`}>−</button><span aria-label={`${item.name} quantity`}>{item.quantity}</span><button onClick={() => dispatch(increaseQuantity(item.id))} aria-label={`Increase ${item.name} quantity`}>+</button></div></div><div className="line-total"><strong>{money(item.price * item.quantity)}</strong><span>Item total</span><button className="delete-button" onClick={() => dispatch(removeItem(item.id))} aria-label={`Delete ${item.name}`}>Delete</button></div></article>)}</section><aside className="order-summary"><h2>Order summary</h2><div><span>Total plants</span><strong>{quantity}</strong></div><div className="grand-total"><span>Total cost</span><strong data-testid="cart-total">{money(total)}</strong></div><button className="button checkout-button" disabled={!items.length} onClick={() => setCheckout(true)}>Checkout <span aria-hidden="true">↗</span></button>{checkout && <p className="checkout-message" role="status">Coming Soon — checkout is not available yet.</p>}<a className="continue" href="#/plants">← Continue Shopping</a></aside></div></main>;
+}
